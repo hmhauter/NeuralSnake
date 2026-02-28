@@ -2,7 +2,7 @@ import { useState } from "react"
 import "./Game.css"
 
 export default function Game() {
-  const [prediction, setPrediction] = useState("Waiting...")
+//   const [prediction, setPrediction] = useState("Waiting...")
   const [modelUrl, setModelUrl] = useState("")
 
   return (
@@ -37,7 +37,7 @@ export default function Game() {
           <div className="prediction-box">
             <span>Detected Movement:</span>
             <strong className="prediction-value">
-              {prediction}
+              {}
             </strong>
           </div>
 
