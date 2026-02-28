@@ -1,0 +1,117 @@
+/* Fullscreen background */
+
+.home-container {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(
+    135deg,
+    #0f0c29,
+    #302b63,
+    #ff00cc
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Floating background glow */
+
+.background-blur {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #ff00cc55, transparent);
+  filter: blur(120px);
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Glassmorphism card */
+
+.landing-card {
+  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4rem 6rem;
+  border-radius: 30px;
+  box-shadow: 
+    0 0 40px #ff00cc55,
+    inset 0 0 10px #ffffff22;
+  text-align: center;
+  z-index: 2;
+  animation: fadeIn 1s ease forwards;
+}
+
+/* Neon Title */
+
+.landing-title {
+  font-size: 4rem;
+  color: white;
+  letter-spacing: 2px;
+  text-shadow:
+    0 0 10px #fff,
+    0 0 20px #ff00cc,
+    0 0 40px #ff00cc;
+}
+
+.accent {
+  color: #ff00cc;
+}
+
+/* Subtitle */
+
+.landing-subtitle {
+  color: #ccc;
+  margin: 1rem 0 2rem;
+  font-size: 1.2rem;
+}
+
+/* Neon Button */
+
+.start-button {
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(
+    90deg,
+    #ff00cc,
+    #3333ff
+  );
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow:
+    0 0 10px #ff00cc,
+    0 0 20px #3333ff;
+}
+
+.start-button:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 20px #ff00cc,
+    0 0 40px #3333ff;
+}
+
+/* Animations */
+
+@keyframes float {
+  0%,100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-40px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
