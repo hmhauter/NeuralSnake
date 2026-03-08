@@ -1,4 +1,5 @@
 import { useState } from "react"
+import Webcam from "react-webcam"
 import "./Game.css"
 
 export default function Game() {
@@ -25,11 +26,11 @@ export default function Game() {
 
           {/* VIDEO FEED */}
           <div className="video-container">
-            <video
-              className="video-feed"
-              autoPlay
-              playsInline
-              muted
+            <Webcam
+              audio={false}
+              screenshotFormat="image/jpeg"
+              width={400}
+              mirrored={true}
             />
           </div>
 
