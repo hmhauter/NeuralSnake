@@ -1,3 +1,78 @@
+.score-display{
+  font-size:18px;
+  color:#7df9ff;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+.gameover-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  color:white;
+  border-radius:12px;
+}
+
+.gameover-overlay button{
+  padding:8px 16px;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(90deg,#ff4fd8,#7df9ff);
+  cursor:pointer;
+}
+
+.mode-switch{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.mode-btn{
+  padding:8px 18px;
+  border:none;
+  border-radius:10px;
+  background:#22223a;
+  color:white;
+  cursor:pointer;
+}
+
+.mode-btn.active{
+  background:linear-gradient(90deg,#ff4fd8,#7df9ff);
+  color:black;
+  font-weight:bold;
+}
+
+.snake-canvas{
+  border-radius:12px;
+  box-shadow:0 0 20px rgba(255,79,216,0.3);
+}
+
+.control-overlay{
+  position:absolute;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:center;
+}
+
+.control-overlay button{
+  background:rgba(255,255,255,0.1);
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  font-size:18px;
+  cursor:pointer;
+}
+
 .game-container {
   height: 100vh;
   width: 100vw;
