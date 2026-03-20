@@ -40,10 +40,10 @@ export default function Game() {
 
     const handleKey = (e: KeyboardEvent) => {
 
-      if (e.key === "ArrowUp") setDirection("UP")
-      if (e.key === "ArrowDown") setDirection("DOWN")
-      if (e.key === "ArrowLeft") setDirection("LEFT")
-      if (e.key === "ArrowRight") setDirection("RIGHT")
+      if (e.key === "ArrowUp") changeDirection("UP")
+      if (e.key === "ArrowDown") changeDirection("DOWN")
+      if (e.key === "ArrowLeft") changeDirection("LEFT")
+      if (e.key === "ArrowRight") changeDirection("RIGHT")
 
     }
 
@@ -51,9 +51,24 @@ export default function Game() {
 
     return () => window.removeEventListener("keydown", handleKey)
 
-  }, [])
+  }, [direction])
 
   /* GAME UPDATE */
+
+  function changeDirection(newDir: Direction) {
+
+    const opposite: Record<Direction, Direction> = {
+    UP: "DOWN",
+    DOWN: "UP",
+    LEFT: "RIGHT",
+    RIGHT: "LEFT"
+  }
+
+  // Prevent reversing
+  if (opposite[direction] === newDir) return
+
+  setDirection(newDir)
+}
 
   function updateGame() {
 
