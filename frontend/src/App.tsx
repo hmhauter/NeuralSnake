@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
-import Game from './game/Game.tsx'
-import Home from './home/Home.tsx'
+import Game from './game/Game'
+import Home from './home/Home'
 import './App.css'
 
 
