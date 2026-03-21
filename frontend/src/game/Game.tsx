@@ -27,6 +27,7 @@ export default function Game() {
   const [prediction, setPrediction] = useState("Stopped")
   const [modelLoaded, setModelLoaded] = useState(false)
   const [webcamReady, setWebcamReady] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
 
   const modelRef = useRef<any>(null)
   const webcamRef = useRef<any>(null)
@@ -115,12 +116,16 @@ export default function Game() {
   async function startAI() {
     if (!modelRef.current) return
 
+    setAiLoading(true)
+
     const webcam = new tmImage.Webcam(300, 300, true)
     await webcam.setup()
     await webcam.play()
 
     webcamRef.current = webcam
     setWebcamReady(true)
+
+    setAiLoading(false)
 
     aiRunningRef.current = true
     loop()
@@ -129,7 +134,7 @@ export default function Game() {
   /* STOP AI */
   function stopAI() {
     aiRunningRef.current = false
-
+    setAiLoading(false)
     if (webcamRef.current) {
       webcamRef.current.stop()
       webcamRef.current = null
@@ -249,9 +254,9 @@ export default function Game() {
 
             <button
               className={mode === "ai" ? "mode-btn active" : "mode-btn"}
-              disabled={running}
+              disabled={running || !modelLoaded}
               onClick={async () => {
-                if (running) return
+                if (running || !modelLoaded) return
                 setMode("ai")
                 await startAI()
               }}
@@ -259,17 +264,28 @@ export default function Game() {
               AI
             </button>
 
+
             <div className="score-display">
               Score: {score}
             </div>
           </div>
-
+            {!modelLoaded && (
+            <div>
+              Load a model trained on: UP, DOWN, LEFT, RIGHT to enable AI
+            </div>
+          )}
           <div className="game-board">
             {gameOver && (
               <div className="gameover-overlay">
                 <h2>Game Over</h2>
                 <p>Your Score: {score}</p>
                 <button onClick={resetGame}>Play Again</button>
+              </div>
+            )}
+            {aiLoading && (
+              <div className="gameover-overlay">
+                <h2>Starting Camera...</h2>
+                <p>Please allow camera access</p>
               </div>
             )}
 
@@ -334,7 +350,9 @@ export default function Game() {
           </div>
 
           <div className="model-status">
-            {modelLoaded ? "✅ Model Loaded" : "❌ No Model Loaded"}
+            {modelLoaded
+              ? "✅ Model Loaded"
+              : "❌ No Model Loaded (Required for AI mode)"}
           </div>
         </div>
 
