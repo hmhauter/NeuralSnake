@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import Game from './game/Game.tsx'
+import Game from './game/Game'
 /*
  * Only for toplevel routing for
  * Splashscreen
