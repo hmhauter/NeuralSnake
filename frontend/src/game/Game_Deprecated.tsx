@@ -9,8 +9,8 @@ const GRID = 20
 const SIZE = 400
 
 export default function Game() {
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const videoContainerRef = useRef<HTMLDivElement>(null)
 
   const [direction, setDirection] = useState<Direction>("RIGHT")
   const [snake, setSnake] = useState([{ x: 10, y: 10 }])
@@ -21,146 +21,124 @@ export default function Game() {
   const [gameOver, setGameOver] = useState(false)
 
   const [mode, setMode] = useState<"manual" | "ai">("manual")
-  const modeRef = useRef(mode)
-
   const [modelUrl, setModelUrl] = useState("")
-  const [prediction, setPrediction] = useState("Stopped")
-  const [modelLoaded, setModelLoaded] = useState(false)
-  const [webcamReady, setWebcamReady] = useState(false)
 
+  const [prediction, setPrediction] = useState("Waiting...")
   const modelRef = useRef<any>(null)
   const webcamRef = useRef<any>(null)
-  const aiRunningRef = useRef(false)
-
-  /* KEEP MODE REF UPDATED */
-  useEffect(() => {
-    modeRef.current = mode
-  }, [mode])
+  const [aiRunning, setAiRunning] = useState(false)
+  
 
   /* GAME LOOP */
+
   useEffect(() => {
     if (!running) return
+
     const interval = setInterval(updateGame, 150)
+
     return () => clearInterval(interval)
-  }, [running, direction])
+  })
 
   /* KEYBOARD CONTROLS */
+
   useEffect(() => {
-    if (mode === "ai") return
 
     const handleKey = (e: KeyboardEvent) => {
+
       if (e.key === "ArrowUp") changeDirection("UP")
       if (e.key === "ArrowDown") changeDirection("DOWN")
       if (e.key === "ArrowLeft") changeDirection("LEFT")
       if (e.key === "ArrowRight") changeDirection("RIGHT")
+
     }
 
     window.addEventListener("keydown", handleKey)
+
     return () => window.removeEventListener("keydown", handleKey)
-  }, [mode, direction])
 
-  function changeDirection(newDir: Direction) {
-    const opposite: Record<Direction, Direction> = {
-      UP: "DOWN",
-      DOWN: "UP",
-      LEFT: "RIGHT",
-      RIGHT: "LEFT",
-    }
-
-    if (opposite[direction] === newDir) return
-    setDirection(newDir)
-  }
-
-  /* LOAD MODEL */
-  async function loadModel() {
-    if (!modelUrl) return
-
-    const model = await tmImage.load(
-      modelUrl + "model.json",
-      modelUrl + "metadata.json"
-    )
-
-    modelRef.current = model
-    setModelLoaded(true)
-  }
-
-  /* AI LOOP */
-  async function loop() {
-    if (!aiRunningRef.current) return
-
-    const webcam = webcamRef.current
-    const model = modelRef.current
-    if (!webcam || !model) return
-
-    webcam.update()
-
-    const predictions = await model.predict(webcam.canvas)
-
-    const best = predictions.reduce((a: any, b: any) =>
-      a.probability > b.probability ? a : b
-    )
-
-    if (best.probability > 0.8) {
-      setPrediction(best.className)
-
-      if (modeRef.current === "ai") {
-        changeDirection(best.className as Direction)
-      }
-    }
-
-    requestAnimationFrame(loop)
-  }
-
-  /* START AI */
-  async function startAI() {
-    if (!modelRef.current) return
-
-    const webcam = new tmImage.Webcam(300, 300, true)
-    await webcam.setup()
-    await webcam.play()
-
-    webcamRef.current = webcam
-    setWebcamReady(true)
-
-    aiRunningRef.current = true
-    loop()
-  }
-
-  /* STOP AI */
-  function stopAI() {
-    aiRunningRef.current = false
-
-    if (webcamRef.current) {
-      webcamRef.current.stop()
-      webcamRef.current = null
-    }
-
-    setWebcamReady(false)
-    setPrediction("Stopped")
-  }
-
-  /* ATTACH WEBCAM TO DOM */
-  useEffect(() => {
-    if (mode !== "ai" || !webcamReady) return
-
-    const container = videoContainerRef.current
-    const webcam = webcamRef.current
-
-    if (container && webcam) {
-      container.innerHTML = ""
-      container.appendChild(webcam.canvas)
-    }
-  }, [mode, webcamReady])
+  }, [direction])
 
   /* GAME UPDATE */
+
+  function changeDirection(newDir: Direction) {
+
+    const opposite: Record<Direction, Direction> = {
+    UP: "DOWN",
+    DOWN: "UP",
+    LEFT: "RIGHT",
+    RIGHT: "LEFT"
+  }
+
+  // Prevent reversing
+  if (opposite[direction] === newDir) return
+
+  setDirection(newDir)
+}
+
+
+async function loadModel() {
+
+  if (!modelUrl) return
+
+  const modelURL = modelUrl + "model.json"
+  const metadataURL = modelUrl + "metadata.json"
+
+  const model = await tmImage.load(modelURL, metadataURL)
+  modelRef.current = model
+
+  const webcam = new tmImage.Webcam(300, 300, true)
+  await webcam.setup()
+  await webcam.play()
+
+  webcamRef.current = webcam
+
+  setAiRunning(true)
+  loop()
+}
+
+async function loop() {
+
+  if (!aiRunning) return
+
+  const webcam = webcamRef.current
+  const model = modelRef.current
+
+  if (!webcam || !model) return
+
+  webcam.update()
+
+  const predictions = await model.predict(webcam.canvas)
+
+  const best = predictions.reduce((a: any, b: any) =>
+    a.probability > b.probability ? a : b
+  )
+
+  if (best.probability > 0.8) {
+
+    setPrediction(best.className)
+
+    if (mode === "ai") {
+      changeDirection(best.className as Direction)
+    }
+
+  }
+
+  requestAnimationFrame(loop)
+}
+
+
   function updateGame() {
+
     setSnake(prev => {
+
       const head = { ...prev[0] }
 
       if (direction === "UP") head.y--
       if (direction === "DOWN") head.y++
       if (direction === "LEFT") head.x--
       if (direction === "RIGHT") head.x++
+
+      /* BORDER COLLISION */
 
       if (
         head.x < 0 ||
@@ -175,12 +153,17 @@ export default function Game() {
 
       const newSnake = [head, ...prev]
 
+      /* FOOD COLLISION */
+
       if (head.x === food.x && head.y === food.y) {
+
         setScore(s => s + 1)
+
         setFood({
           x: Math.floor(Math.random() * GRID),
-          y: Math.floor(Math.random() * GRID),
+          y: Math.floor(Math.random() * GRID)
         })
+
       } else {
         newSnake.pop()
       }
@@ -190,7 +173,9 @@ export default function Game() {
   }
 
   /* DRAW */
+
   useEffect(() => {
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -200,88 +185,102 @@ export default function Game() {
     ctx.fillStyle = "#0c0c18"
     ctx.fillRect(0, 0, SIZE, SIZE)
 
+    /* FOOD */
+
     const fx = food.x * 20 + 10
     const fy = food.y * 20 + 10
 
     ctx.beginPath()
     ctx.arc(fx, fy, 8, 0, Math.PI * 2)
+
     ctx.fillStyle = "#ff2bd6"
     ctx.shadowColor = "#ff2bd6"
     ctx.shadowBlur = 15
+
     ctx.fill()
+
     ctx.shadowBlur = 0
 
+    /* SNAKE */
+
     snake.forEach((segment, i) => {
+
       ctx.fillStyle = i === 0 ? "#7df9ff" : "#8affb5"
+
       ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20)
+
     })
+
   }, [snake, food])
 
+  /* RESET */
+
   function resetGame() {
+
     setSnake([{ x: 10, y: 10 }])
     setDirection("RIGHT")
     setFood({ x: 5, y: 5 })
     setRunning(false)
     setGameOver(false)
     setScore(0)
+
   }
 
   return (
     <div className="game-container">
+
+
       <div className="game-layout">
 
         {/* LEFT: GAME */}
+
         <div className="game-panel">
+
           <h2 className="panel-title">Snake Arena</h2>
 
-          <div className="mode-switch">
-            <button
-              className={mode === "manual" ? "mode-btn active" : "mode-btn"}
-              disabled={running}
-              onClick={() => {
-                if (running) return
-                setMode("manual")
-                stopAI()
-              }}
-            >
-              Manual
-            </button>
+        {/* MODE SWITCH */}
 
-            <button
-              className={mode === "ai" ? "mode-btn active" : "mode-btn"}
-              disabled={running}
-              onClick={async () => {
-                if (running) return
-                setMode("ai")
-                await startAI()
-              }}
-            >
-              AI
-            </button>
+      <div className="mode-switch">
+        <button
+          className={mode === "manual" ? "mode-btn active" : "mode-btn"}
+          onClick={() => setMode("manual")}
+        >
+          Manual
+        </button>
 
-            <div className="score-display">
-              Score: {score}
-            </div>
-          </div>
+        <button
+          className={mode === "ai" ? "mode-btn active" : "mode-btn"}
+          onClick={() => setMode("ai")}
+        >
+          AI
+        </button>
+
+        <div className="score-display">
+          Score: {score}
+        </div>
+
+      </div>
 
           <div className="game-board">
-            {gameOver && (
-              <div className="gameover-overlay">
-                <h2>Game Over</h2>
-                <p>Your Score: {score}</p>
-                <button onClick={resetGame}>Play Again</button>
-              </div>
-            )}
-
+           {gameOver && (
+            <div className="gameover-overlay">
+              <h2>Game Over</h2>
+              <p>Your Score: {score}</p>
+              <button onClick={resetGame}>Play Again</button>
+            </div>
+          )}
             <canvas
               ref={canvasRef}
               width={SIZE}
               height={SIZE}
               className="snake-canvas"
-            />
+            ></canvas>
+
+
           </div>
 
           <div className="control-panel">
+
             <button className="control-btn" onClick={() => setRunning(true)}>
               Start
             </button>
@@ -293,15 +292,27 @@ export default function Game() {
             <button className="control-btn danger" onClick={resetGame}>
               Reset
             </button>
+
           </div>
+
         </div>
 
+
         {/* RIGHT: AI PANEL */}
+
         <div className="ai-panel">
+
           <h2 className="panel-title">AI Motion Control</h2>
 
           <div className="video-container">
-            {mode === "ai" && <div ref={videoContainerRef} />}
+            {webcamRef.current && (
+              <div ref={(ref) => {
+                if (ref && webcamRef.current) {
+                  ref.innerHTML = ""
+                  ref.appendChild(webcamRef.current.canvas)
+                }
+              }} />
+            )}
           </div>
 
           <div className="prediction-box">
@@ -311,15 +322,8 @@ export default function Game() {
             </strong>
           </div>
 
-          <div className="rules-box">
-            <h3>Game Rules</h3>
-            <ul>
-              <li>Game ends when snake hits the border</li>
-              <li>Snake can cross itself</li>
-            </ul>
-          </div>
-
           <div className="model-upload">
+
             <input
               type="text"
               placeholder="Paste Teachable Machine model URL..."
@@ -328,14 +332,12 @@ export default function Game() {
               className="model-input"
             />
 
-            <button className="small-btn" onClick={loadModel}>
-              Load Model
-            </button>
+          <button className="small-btn" onClick={loadModel}>
+            Load Model
+          </button>
+
           </div>
 
-          <div className="model-status">
-            {modelLoaded ? "✅ Model Loaded" : "❌ No Model Loaded"}
-          </div>
         </div>
 
       </div>
