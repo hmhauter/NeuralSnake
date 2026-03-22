@@ -1,18 +1,17 @@
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
-import "./Home.css"
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import "./Home.css";
 
 export default function Home() {
-  const navigate = useNavigate()
-  const [name, setName] = useState("")
-    const startGame = () => {
-    if (!name.trim()) return
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const startGame = () => {
+    if (!name.trim()) return;
     // Carefule - usage of local storage -> will be firebase session
-    localStorage.setItem("playerName", name.trim())
+    localStorage.setItem("playerName", name.trim());
 
-    navigate(`/game?player=${encodeURIComponent(name.trim())}`)
-  }
-
+    navigate(`/game?player=${encodeURIComponent(name.trim())}`);
+  };
 
   return (
     <div className="home-container">
@@ -20,14 +19,12 @@ export default function Home() {
 
       <div className="landing-card">
         <h1 className="landing-title">
-            High5Girls <br /> x <br />
+          High5Girls <br /> x <br />
           <span className="accent">NeuralSnake</span>
         </h1>
 
-        <p className="landing-subtitle">
-          Train AI. Play Smart. Slay the Grid.
-        </p>
-      <div className="login-section">
+        <p className="landing-subtitle">Train AI. Play Smart. Slay the Grid.</p>
+        <div className="login-section">
           <input
             className="name-input"
             type="text"
@@ -35,14 +32,11 @@ export default function Home() {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-        <button 
-          className="start-button"
-          onClick={startGame}
-        >
-          Start Game →
-        </button>
+          <button className="start-button" onClick={startGame}>
+            Start Game →
+          </button>
         </div>
       </div>
     </div>
-  )
+  );
 }

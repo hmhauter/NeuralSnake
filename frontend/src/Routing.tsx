@@ -1,5 +1,5 @@
-import { Route, Routes } from 'react-router-dom'
-import Game from './game/Game'
+import { Route, Routes } from "react-router-dom";
+import Game from "./game/Game";
 /*
  * Only for toplevel routing for
  * Splashscreen
@@ -9,9 +9,9 @@ import Game from './game/Game'
  */
 
 const RoutingTable = (): React.ReactElement => (
-    <Routes>
-        <Route path="/game" element={<Game />} />
-    </Routes>
+  <Routes>
+    <Route path="/game" element={<Game />} />
+  </Routes>
 );
 
 RoutingTable.displayName = "RoutingTable";
