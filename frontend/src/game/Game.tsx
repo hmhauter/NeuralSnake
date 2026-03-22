@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 
 import "./Game.css"
 import { saveScore, getLeaderboardByMode } from "../firebase"
+import { run } from "node:test"
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT"
 
@@ -36,19 +37,32 @@ export default function Game() {
   const modelRef = useRef<any>(null)
   const webcamRef = useRef<any>(null)
   const aiRunningRef = useRef(false)
+  const directionRef = useRef(direction)
+  const snakeRef = useRef(snake)
+  const foodRef = useRef(food)
+  const scoreRef = useRef(score)
 
 
   /* KEEP MODE REF UPDATED */
   useEffect(() => {
     modeRef.current = mode
   }, [mode])
+  useEffect(() => {
+  directionRef.current = direction
+}, [direction])
+useEffect(() => { snakeRef.current = snake }, [snake])
+useEffect(() => { foodRef.current = food }, [food])
+useEffect(() => { scoreRef.current = score }, [score])
 
   /* GAME LOOP */
   useEffect(() => {
+    console.log("GAME LOOP")
+    console.log(running)
+    console.log(direction)
     if (!running) return
     const interval = setInterval(updateGame, 150)
     return () => clearInterval(interval)
-  }, [running, direction])
+  }, [running])
 
   /* KEYBOARD CONTROLS */
   useEffect(() => {
@@ -71,6 +85,7 @@ export default function Game() {
   }, [])
 
   function changeDirection(newDir: Direction) {
+    console.log("Change direction")
     const opposite: Record<Direction, Direction> = {
       UP: "DOWN",
       DOWN: "UP",
@@ -168,46 +183,50 @@ export default function Game() {
   }, [mode, webcamReady])
 
   /* GAME UPDATE */
-  function updateGame() {
-    setSnake(prev => {
-      const head = { ...prev[0] }
+function updateGame() {
+  const currentSnake = snakeRef.current
+  const currentFood = foodRef.current
+  const currentScore = scoreRef.current
 
-      if (direction === "UP") head.y--
-      if (direction === "DOWN") head.y++
-      if (direction === "LEFT") head.x--
-      if (direction === "RIGHT") head.x++
+  const head = { ...currentSnake[0] }
+  const dir = directionRef.current
 
-      if (
-        head.x < 0 ||
-        head.y < 0 ||
-        head.x >= GRID ||
-        head.y >= GRID
-      ) {
-        setRunning(false)
-        setGameOver(true)
+  if (dir === "UP") head.y--
+  if (dir === "DOWN") head.y++
+  if (dir === "LEFT") head.x--
+  if (dir === "RIGHT") head.x++
 
-        // FIREBASE UPDATE
-        const name = localStorage.getItem("playerName") || "anonymous"
-        saveScore(name, score, mode) 
-
-        return prev
-      }
-
-      const newSnake = [head, ...prev]
-
-      if (head.x === food.x && head.y === food.y) {
-        setScore(s => s + 1)
-        setFood({
-          x: Math.floor(Math.random() * GRID),
-          y: Math.floor(Math.random() * GRID),
-        })
-      } else {
-        newSnake.pop()
-      }
-
-      return newSnake
-    })
+  // WALL COLLISION
+  if (head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID) {
+    setRunning(false)
+    setGameOver(true)
+    const name = localStorage.getItem("playerName") || "anonymous"
+    saveScore(name, currentScore, mode)
+    return
   }
+
+  const ateFood = head.x === currentFood.x && head.y === currentFood.y
+
+  const newSnake = [head, ...currentSnake]
+  if (!ateFood) newSnake.pop()
+
+  // Update states AND refs together
+  setSnake(newSnake)
+  snakeRef.current = newSnake
+
+  if (ateFood) {
+    const newScore = currentScore + 1
+    setScore(newScore)
+    scoreRef.current = newScore
+
+    const newFood = {
+      x: Math.floor(Math.random() * GRID),
+      y: Math.floor(Math.random() * GRID),
+    }
+    setFood(newFood)
+    foodRef.current = newFood
+  }
+}
 
   /* DRAW */
   useEffect(() => {
