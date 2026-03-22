@@ -2,6 +2,7 @@ import * as tmImage from "@teachablemachine/image"
 import { useEffect, useRef, useState } from "react"
 
 import "./Game.css"
+import { saveScore, getLeaderboardByMode } from "../firebase"
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT"
 
@@ -29,9 +30,13 @@ export default function Game() {
   const [webcamReady, setWebcamReady] = useState(false)
   const [aiLoading, setAiLoading] = useState(false)
 
+  const [aiLeaderboard, setAiLeaderboard] = useState<any[]>([])
+  const [manualLeaderboard, setManualLeaderboard] = useState<any[]>([])
+
   const modelRef = useRef<any>(null)
   const webcamRef = useRef<any>(null)
   const aiRunningRef = useRef(false)
+
 
   /* KEEP MODE REF UPDATED */
   useEffect(() => {
@@ -59,6 +64,11 @@ export default function Game() {
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
   }, [mode, direction])
+
+  useEffect(() => {
+    getLeaderboardByMode("ai").then(setAiLeaderboard)
+    getLeaderboardByMode("manual").then(setManualLeaderboard)
+  }, [])
 
   function changeDirection(newDir: Direction) {
     const opposite: Record<Direction, Direction> = {
@@ -175,6 +185,11 @@ export default function Game() {
       ) {
         setRunning(false)
         setGameOver(true)
+
+        // FIREBASE UPDATE
+        const name = localStorage.getItem("playerName") || "anonymous"
+        saveScore(name, score, mode) 
+
         return prev
       }
 
@@ -270,8 +285,8 @@ export default function Game() {
             </div>
           </div>
             {!modelLoaded && (
-            <div>
-              Load a model trained on: UP, DOWN, LEFT, RIGHT to enable AI
+            <div className="model-status">
+              Load a model trained on UP, DOWN, LEFT, RIGHT to enable AI
             </div>
           )}
           <div className="game-board">
@@ -354,6 +369,28 @@ export default function Game() {
               ? "✅ Model Loaded"
               : "❌ No Model Loaded (Required for AI mode)"}
           </div>
+
+
+        <div className="rules-box">
+
+        <h3>🤖 AI Leaderboard</h3>
+        {aiLeaderboard.map((entry, i) => (
+          <div key={i} className="leaderboard-item">
+            <span>{i + 1}. {entry.name}</span>
+            <strong>{entry.score}</strong>
+          </div>
+        ))}
+
+        <h3 style={{ marginTop: "16px" }}>🎮 Manual Leaderboard</h3>
+        {manualLeaderboard.map((entry, i) => (
+          <div key={i} className="leaderboard-item">
+            <span>{i + 1}. {entry.name}</span>
+            <strong>{entry.score}</strong>
+          </div>
+        ))}
+
+      </div>
+
         </div>
 
       </div>

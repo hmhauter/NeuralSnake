@@ -226,7 +226,7 @@
   background:rgba(255,255,255,0.05);
   backdrop-filter:blur(10px);
   color:white;
-  font-size:14px;
+  font-size:16px;
 }
 
 .rules-box h3{
@@ -241,6 +241,24 @@
 
 .rules-box li{
   margin-bottom:6px;
+}
+
+.leaderboard{
+  margin-top:20px;
+  padding:12px;
+  background:rgba(255,255,255,0.05);
+  border-radius:12px;
+}
+
+.leaderboard-item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+.leaderboard h3{
+  font-size:16px;
+  margin-bottom:8px;
+  color:#ff4fd8;
 }
 
 .small-btn {
