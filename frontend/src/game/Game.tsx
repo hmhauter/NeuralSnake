@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import "./Game.css";
 import {
   saveScore,
-  getLeaderboardByMode,
   subscribeToLeaderboard,
 } from "../firebase";
 
