@@ -46,6 +46,12 @@ export function subscribeToLeaderboard(
     limit(5),
   );
 
+  onSnapshot(q, (snapshot) => {
+  console.log("SNAPSHOT DATA:", snapshot.docs.length)
+  const data = snapshot.docs.map(doc => doc.data())
+  callback(data)
+})
+
   const unsubscribe = onSnapshot(q, (snapshot) => {
     const data = snapshot.docs.map((doc) => doc.data());
     callback(data);
