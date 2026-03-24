@@ -7,7 +7,7 @@ import {
   query,
   orderBy,
   limit,
-  getDocs,
+  onSnapshot,
   where,
 } from "firebase/firestore";
 
@@ -35,7 +35,10 @@ export async function saveScore(
   });
 }
 
-export async function getLeaderboardByMode(mode: "manual" | "ai") {
+export function subscribeToLeaderboard(
+  mode: "manual" | "ai",
+  callback: (data: any[]) => void,
+) {
   const q = query(
     collection(db, "scores"),
     where("mode", "==", mode),
@@ -43,9 +46,12 @@ export async function getLeaderboardByMode(mode: "manual" | "ai") {
     limit(5),
   );
 
-  const snapshot = await getDocs(q);
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map((doc) => doc.data());
+    callback(data);
+  });
 
-  return snapshot.docs.map((doc) => doc.data());
+  return unsubscribe;
 }
 
 const app = initializeApp(firebaseConfig);

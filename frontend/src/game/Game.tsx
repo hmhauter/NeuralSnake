@@ -2,7 +2,11 @@ import * as tmImage from "@teachablemachine/image";
 import { useEffect, useRef, useState } from "react";
 
 import "./Game.css";
-import { saveScore, getLeaderboardByMode } from "../firebase";
+import {
+  saveScore,
+  getLeaderboardByMode,
+  subscribeToLeaderboard,
+} from "../firebase";
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
@@ -81,8 +85,16 @@ export default function Game() {
   }, [mode, direction]);
 
   useEffect(() => {
-    getLeaderboardByMode("ai").then(setAiLeaderboard);
-    getLeaderboardByMode("manual").then(setManualLeaderboard);
+    const unsubscribeAI = subscribeToLeaderboard("ai", setAiLeaderboard);
+    const unsubscribeManual = subscribeToLeaderboard(
+      "manual",
+      setManualLeaderboard,
+    );
+
+    return () => {
+      unsubscribeAI();
+      unsubscribeManual();
+    };
   }, []);
 
   function changeDirection(newDir: Direction) {
