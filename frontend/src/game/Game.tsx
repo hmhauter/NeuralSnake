@@ -276,6 +276,10 @@ export default function Game() {
     setScore(0);
   }
 
+  console.log("FIREBASE CONFIG:", {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+})
+
   return (
     <div className="game-container">
       <div className="game-layout">
