@@ -94,6 +94,7 @@ export default function Game() {
   }, []);
 
   function changeDirection(newDir: Direction) {
+
     const opposite: Record<Direction, Direction> = {
       UP: "DOWN",
       DOWN: "UP",
@@ -101,7 +102,8 @@ export default function Game() {
       RIGHT: "LEFT",
     };
 
-    if (opposite[direction] === newDir) return;
+    if (modeRef.current === "manual" && opposite[direction] === newDir) return;
+
     setDirection(newDir);
   }
 
@@ -134,7 +136,7 @@ export default function Game() {
       a.probability > b.probability ? a : b,
     );
 
-    if (best.probability > 0.8) {
+    if (best.probability > 0.7) {
       setPrediction(best.className);
 
       if (modeRef.current === "ai") {
@@ -259,7 +261,7 @@ export default function Game() {
     ctx.shadowBlur = 0;
 
     snake.forEach((segment, i) => {
-      ctx.fillStyle = i === 0 ? "#7dd6ff" : "#8affb5";
+      ctx.fillStyle = i === 0 ? "#0299f6" : "#8affb5";
       ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20);
     });
   }, [snake, food]);
