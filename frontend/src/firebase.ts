@@ -47,9 +47,9 @@ export function subscribeToLeaderboard(
   );
 
   onSnapshot(q, (snapshot) => {
-  const data = snapshot.docs.map(doc => doc.data())
-  callback(data)
-})
+    const data = snapshot.docs.map((doc) => doc.data());
+    callback(data);
+  });
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     const data = snapshot.docs.map((doc) => doc.data());

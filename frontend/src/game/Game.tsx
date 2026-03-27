@@ -2,10 +2,7 @@ import * as tmImage from "@teachablemachine/image";
 import { useEffect, useRef, useState } from "react";
 
 import "./Game.css";
-import {
-  saveScore,
-  subscribeToLeaderboard,
-} from "../firebase";
+import { saveScore, subscribeToLeaderboard } from "../firebase";
 
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 
@@ -64,7 +61,7 @@ export default function Game() {
   /* GAME LOOP */
   useEffect(() => {
     if (!running) return;
-    const interval = setInterval(updateGame, 150);
+    const interval = setInterval(updateGame, 350);
     return () => clearInterval(interval);
   }, [running]);
 
@@ -262,7 +259,7 @@ export default function Game() {
     ctx.shadowBlur = 0;
 
     snake.forEach((segment, i) => {
-      ctx.fillStyle = i === 0 ? "#7df9ff" : "#8affb5";
+      ctx.fillStyle = i === 0 ? "#7dd6ff" : "#8affb5";
       ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20);
     });
   }, [snake, food]);
@@ -275,7 +272,6 @@ export default function Game() {
     setGameOver(false);
     setScore(0);
   }
-
 
   return (
     <div className="game-container">
@@ -340,7 +336,14 @@ export default function Game() {
           </div>
 
           <div className="control-panel">
-            <button className="control-btn" onClick={() => setRunning(true)}>
+            <button
+              className="control-btn"
+              onClick={() => {
+                if (gameOver === false) {
+                  setRunning(true);
+                }
+              }}
+            >
               Start
             </button>
 
