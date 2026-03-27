@@ -47,7 +47,6 @@ export function subscribeToLeaderboard(
   );
 
   onSnapshot(q, (snapshot) => {
-  console.log("SNAPSHOT DATA:", snapshot.docs.length)
   const data = snapshot.docs.map(doc => doc.data())
   callback(data)
 })
