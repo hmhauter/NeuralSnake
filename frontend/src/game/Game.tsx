@@ -70,6 +70,7 @@ export default function Game() {
     if (mode === "ai") return;
 
     const handleKey = (e: KeyboardEvent) => {
+      e.preventDefault()
       if (e.key === "ArrowUp") changeDirection("UP");
       if (e.key === "ArrowDown") changeDirection("DOWN");
       if (e.key === "ArrowLeft") changeDirection("LEFT");

@@ -74,8 +74,8 @@
 }
 
 .game-container {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh; 
+  width: 100%;
   background: linear-gradient(
     135deg,
     #0f0c29,
@@ -83,7 +83,8 @@
     #ff00cc
   );
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  padding: 2rem 0;
   justify-content: center;
   font-family: 'Segoe UI', sans-serif;
 }
@@ -107,7 +108,7 @@
 
 .game-board {
   margin-top: 1rem;
-  height: 550px;
+  height: 500px;
   border-radius: 20px;
   background:
     repeating-linear-gradient(
