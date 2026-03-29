@@ -310,9 +310,9 @@ export default function Game() {
             <div className="score-display">Score: {score}</div>
           </div>
           {!modelLoaded && (
-            <div className="model-status">
-              Load a model trained on UP, DOWN, LEFT, RIGHT to enable AI
-            </div>
+            <a href="https://teachablemachine.withgoogle.com/train" target='_blank' className="model-status">
+              Click here to train your own model on UP, DOWN, LEFT, RIGHT to enable AI
+            </a>
           )}
           <div className="game-board">
             {gameOver && (
